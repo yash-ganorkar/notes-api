@@ -14,6 +14,11 @@ let Todo = mongoose.model('Todo', {
     createdAt: {
         type: Number,
         default: new Date().getTime()
+    },
+    userid: {
+        type: String,
+        required: true,
+        trim: true
     }
 });
 
