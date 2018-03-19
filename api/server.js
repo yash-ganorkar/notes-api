@@ -5,9 +5,11 @@ const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
 const _ = require('lodash');
 
+
 const mongoose = require('./db/mongoose');
 const {User} = require('./models/User');
 const {Todo} = require('./models/Todo');
+const {authenticate} = require('./middleware/authenticate');
 
 let app = express();
 const port = process.env.PORT;
@@ -16,14 +18,16 @@ app.use(bodyParser.json());
 
 //POST /user
 app.post('/user', (request, response) => {
-    let user = new User({
-        name: request.body.name,
-        email: request.body.email,
-        password: request.body.password
-    });
-    user.save().then((doc) => {
-        response.send(doc);
-    }, (error) => {
+
+    let body = _.pick(request.body, ['name', 'email', 'password'])
+    let user = new User(body);
+
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
+        response.header('x-auth', token).send(user);
+    }).catch((error) => {
         response.status(400).send({
             errorMessage: 'error occured ' + error
         });
@@ -153,6 +157,12 @@ app.patch('/todos/:id', (request, response) => {
             });
         })
 });
+
+
+app.get('/users/me', authenticate, (request, response) => {
+    response.send(request.user);
+});
+
 
 
 app.listen(port, () => {
