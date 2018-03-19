@@ -72,12 +72,48 @@ app.get('/todos/:id', (request, response) => {
     }
 
     Todo.find({_id: request.params.id}).then((doc) => {
+
+        if (!doc) {
+            return response.status(404).send({
+                errorMessage: 'Unable to fetch the requested note. Please try again.'
+            })
+        }
         response.send(doc);
     }, (error) => {
         response.status(400).send({
             errorMessage: 'error occured ' + error
         });
     });
+});
+
+app.delete('/todos/:id', (request, response) => {
+
+    if (request.headers['bearer'] === '') {
+        response.status(400).send({
+            errorMessage: "Bearer token required"
+        })
+    }
+
+    else if (!ObjectID.isValid(request.params.id)) {
+        response.status(404).send({
+            errorMessage: "Invalid id."
+        })
+    }
+
+    Todo.findByIdAndRemove({_id: request.params.id}).then((todo) => {
+        if (!todo) {
+            return response.status(404).send({
+                errorMessage: 'Unable to fetch the delete note. Please try again.'
+            })
+        }
+
+        response.send(todo);
+    }).catch((e) => {
+        response.status(400).send({
+            errorMessage: 'error occured ' + e
+        });
+    })
+
 });
 
 
