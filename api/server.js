@@ -158,12 +158,23 @@ app.patch('/todos/:id', (request, response) => {
         })
 });
 
-
+//private method
 app.get('/users/me', authenticate, (request, response) => {
     response.send(request.user);
 });
 
+//POST /users/login
+app.post('/users/login', (request, response) => {
+    let body = _.pick(request.body, ['email', 'password']);
 
+    User.findByCredentials(body.email, body.password).then((user) => {
+        user.generateAuthToken().then((token) => {
+            response.header('x-auth', token).send(user);
+        });
+    }).catch((error) => {
+        response.status(400).send();
+    });
+});
 
 app.listen(port, () => {
     console.log(`Started at ${port}`);
