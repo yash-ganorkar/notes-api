@@ -7,10 +7,6 @@ let Todo = mongoose.model('Todo', {
         minLength: 4,
         trim: true
     },
-    completedAt: {
-        type: Number,
-        default: null
-    },
     createdAt: {
         type: Number,
         default: new Date().getTime()
