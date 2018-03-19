@@ -57,7 +57,7 @@ app.get('/todos', (request, response) => {
     });
 });
 
-//GET /todos:id
+//GET /todos/:id
 app.get('/todos/:id', (request, response) => {
 
     if (request.headers['bearer'] === '') {
@@ -87,6 +87,7 @@ app.get('/todos/:id', (request, response) => {
     });
 });
 
+//DELETE /todos/:id
 app.delete('/todos/:id', (request, response) => {
 
     if (request.headers['bearer'] === '') {
