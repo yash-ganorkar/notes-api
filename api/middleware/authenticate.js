@@ -7,7 +7,8 @@ let authenticate = (request, response, next) => {
         if (!user) {
             return Promise.reject();
         }
-        response.send(user);
+        request.user = user;
+        request.token = token;
         next();
     }).catch((error) => {
         response.status(401).send();

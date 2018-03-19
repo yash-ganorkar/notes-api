@@ -57,3 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
+# json file
+api/config/config.json
+

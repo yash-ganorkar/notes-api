@@ -35,10 +35,10 @@ app.post('/user', (request, response) => {
 });
 
 //POST /todos
-app.post('/todo', (request, response) => {
+app.post('/todo', authenticate, (request, response) => {
 
     let user = new Todo({
-        userid: request.headers['bearer'],
+        userid: request.user._id,
         text: request.body.text
     });
     user.save().then((doc) => {
@@ -51,10 +51,10 @@ app.post('/todo', (request, response) => {
 });
 
 //GET /todos
-app.get('/todos', (request, response) => {
+app.get('/todos', authenticate, (request, response) => {
 
 
-    Todo.find({userid: request.headers['bearer']}).then((doc) => {
+    Todo.find({userid: request.user._id}).then((doc) => {
         response.send(doc);
     }, (error) => {
         response.status(400).send({
@@ -64,21 +64,15 @@ app.get('/todos', (request, response) => {
 });
 
 //GET /todos/:id
-app.get('/todos/:id', (request, response) => {
+app.get('/todos/:id', authenticate, (request, response) => {
 
-    if (request.headers['bearer'] === '') {
-        response.status(400).send({
-            errorMessage: "Bearer token required"
-        })
-    }
-
-    else if (!ObjectID.isValid(request.params.id)) {
+    if (!ObjectID.isValid(request.params.id)) {
         response.status(404).send({
             errorMessage: "Invalid id."
         })
     }
 
-    Todo.find({_id: request.params.id}).then((doc) => {
+    Todo.findOne({_id: request.params.id, userid: request.user._id}).then((doc) => {
 
         if (!doc) {
             return response.status(404).send({
@@ -94,21 +88,15 @@ app.get('/todos/:id', (request, response) => {
 });
 
 //DELETE /todos/:id
-app.delete('/todos/:id', (request, response) => {
+app.delete('/todos/:id', authenticate, (request, response) => {
 
-    if (request.headers['bearer'] === '') {
-        response.status(400).send({
-            errorMessage: "Bearer token required"
-        })
-    }
-
-    else if (!ObjectID.isValid(request.params.id)) {
+    if (!ObjectID.isValid(request.params.id)) {
         response.status(404).send({
             errorMessage: "Invalid id."
         })
     }
 
-    Todo.findByIdAndRemove({_id: request.params.id}).then((todo) => {
+    Todo.findOneAndRemove({_id: request.params.id, userid: request.user._id}).then((todo) => {
         if (!todo) {
             return response.status(404).send({
                 errorMessage: 'Unable to fetch the delete note. Please try again.'
@@ -125,25 +113,19 @@ app.delete('/todos/:id', (request, response) => {
 });
 
 //PATCH /todos/:id
-app.patch('/todos/:id', (request, response) => {
+app.patch('/todos/:id', authenticate, (request, response) => {
 
     let id = request.params.id;
 
     let body = _.pick(request.body, ['text']);
 
-    if (request.headers['bearer'] === '') {
-        response.status(400).send({
-            errorMessage: "Bearer token required"
-        })
-    }
-
-    else if (!ObjectID.isValid(id)) {
+    if (!ObjectID.isValid(id)) {
         response.status(404).send({
             errorMessage: "Invalid id."
         })
     }
 
-    Todo.findByIdAndUpdate(id, {$set: {text: body.text}}, {new: true})
+    Todo.findOneAndUpdate({_id: id, userid: request.user._id}, {$set: {text: body.text}}, {new: true})
         .then((todo) => {
             if (!todo) {
                 return response.status(404).send();
@@ -174,6 +156,14 @@ app.post('/users/login', (request, response) => {
     }).catch((error) => {
         response.status(400).send();
     });
+});
+
+//DELETE /users/me/token
+app.delete('/users/me/token', authenticate, (request, response) => {
+    console.log(request.user);
+    request.user.removeToken(request.token).then(() => {
+        response.status(200).send();
+    }, () => response.status(400).send())
 });
 
 app.listen(port, () => {

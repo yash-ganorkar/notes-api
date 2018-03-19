@@ -12,7 +12,7 @@ let Todo = mongoose.model('Todo', {
         default: new Date().getTime()
     },
     userid: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         trim: true
     }

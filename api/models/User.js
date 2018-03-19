@@ -49,7 +49,7 @@ UserSchema.statics.findByToken = function (token) {
     let decoded;
 
     try {
-        decoded = jwt.verify(token, 'yashganorkar');
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (e) {
         return Promise.reject();
     }
@@ -72,7 +72,7 @@ UserSchema.methods.generateAuthToken = function () {
     let user = this;
     let access = 'auth';
 
-    let token = jwt.sign({_id: user._id.toHexString(), access}, 'yashganorkar').toString();
+    let token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 
     user.tokens = user.tokens.concat([{access, token}]);
 
@@ -80,6 +80,19 @@ UserSchema.methods.generateAuthToken = function () {
         return token
     });
 };
+
+UserSchema.methods.removeToken = function (token) {
+    let user = this;
+
+    return user.update({
+        $pull: {
+            tokens: {
+                token: token
+            }
+        }
+    })
+};
+
 
 UserSchema.pre('save', function (next) {
     let user = this;
@@ -116,6 +129,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
     })
 
 };
+
 
 let User = mongoose.model('User', UserSchema);
 
