@@ -106,3 +106,8 @@ In order to use the system, there are following methods which can be used to int
  * Response type - JSON
  * Body - JSON Object containing id, name and email. For example { "_id": "5ab1885def8ecc49ac7a103b", "name": "Your name", "email": "test@domain.com"}
  * Headers - The API returns an X-Auth header which is then used for further communication and is passed into header for every request.
+ 
+## Contributor
+ Yash Ganorkar
+ [GitHub](https://github.com/yash-ganorkar)
+ [LinkedIn](https://linkedin.com/in/yashganorkar)
