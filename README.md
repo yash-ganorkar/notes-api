@@ -73,7 +73,7 @@ In order to use the system, there are following methods which can be used to int
  
  * Headers - None
  
-  ### Delete particular note
+ ### Delete particular note
  The following request deletes a particular note
  * Request type - DELETE
  * URL - /todos/:id where :id is id of the note.
@@ -85,7 +85,7 @@ In order to use the system, there are following methods which can be used to int
  
  * Headers - None
  
-   ### Logout from the application
+ ### Logout from the application
  The following request deletes a particular note
  * Request type - DELETE
  * URL - /users/me/token
@@ -96,7 +96,7 @@ In order to use the system, there are following methods which can be used to int
  * Body - None
  * Headers - None
  
-    ### Login to the application
+ ### Login to the application
  The following request deletes a particular note
  * Request type - POST
  * URL - /users/login
