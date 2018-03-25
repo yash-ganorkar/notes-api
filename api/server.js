@@ -19,17 +19,19 @@ app.use(bodyParser.json());
 //POST /user
 app.post('/user', (request, response) => {
 
-    let body = _.pick(request.body, ['name', 'email', 'password'])
-    let user = new User(body);
+    let body = _.pick(request.body, ['name', 'email', 'password', 'username']);
 
+    let user = new User(body);
 
     user.save().then(() => {
         return user.generateAuthToken();
     }).then((token) => {
-        response.header('x-auth', token).send(user);
+        response.header('x-auth', token).send({
+            createUserResponse: "User Successfully registered"
+        });
     }).catch((error) => {
         response.status(400).send({
-            errorMessage: 'error occured ' + error
+            createUserResponse: 'error occured ' + error
         });
     });
 });
