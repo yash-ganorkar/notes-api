@@ -41,11 +41,6 @@ let UserSchema = new mongoose.Schema({
         required: true,
         minLength: 8,
         trim: true
-    },
-    username: {
-        type: String,
-        required: true,
-        trim: true
     }
 });
 

@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 //POST /user
 app.post('/user', (request, response) => {
 
-    let body = _.pick(request.body, ['name', 'email', 'password', 'username']);
+    let body = _.pick(request.body, ['name', 'email', 'password']);
 
     let user = new User(body);
 
@@ -153,7 +153,9 @@ app.post('/users/login', (request, response) => {
 
     User.findByCredentials(body.email, body.password).then((user) => {
         user.generateAuthToken().then((token) => {
-            response.header('x-auth', token).send(user);
+            response.header('x-auth', token).send({
+                loginUser: "User successfully logged in."
+            });
         });
     }).catch((error) => {
         response.status(400).send();
